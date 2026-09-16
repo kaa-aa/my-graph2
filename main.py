@@ -19,7 +19,9 @@ def load_data():
 
 df = load_data()
 
+# ==========================================
 # 구역 1: 장르별 영화 편수 (도넛 그래프)
+# ==========================================
 st.subheader("1. 장르별 영화 편수 분포")
 
 # 장르별 편수 집계
@@ -40,7 +42,33 @@ fig1.update_traces(hovertemplate="<b>%{label}</b><br>편수: %{value}편<br>비�
 
 st.plotly_chart(fig1, use_container_width=True)
 
-# 그래프 해석 안내 구역
+# 그래프 1 해석 안내
 st.info("**이 그래프로 알 수 있는 것:** 특정 장르가 전체 박스오피스 상위권 영화 중 차지하는 비중과 다수 제작된 대표 장르를 한눈에 파악할 수 있습니다.")
+
+st.divider()
+
+# ==========================================
+# 구역 2: 장르 및 영화별 총 관객수 (트리맵)
+# ==========================================
+st.subheader("2. 장르 및 영화별 총 관객수 분포")
+
+# 플롯리 트리맵 생성 (장르 > 영화명 계층구조, 칸 크기 = total_audi)
+fig2 = px.treemap(
+    df,
+    path=[px.Constant("전체 영화"), 'genre', 'movieNm'],
+    values='total_audi',
+    color='genre',
+    title="장르-영화별 총 관객수 트리맵"
+)
+
+# 호버 시 영화명과 총 관객수가 표시되도록 설정
+fig2.update_traces(
+    hovertemplate="<b>%{label}</b><br>총 관객수: %{value:,}명<extra></extra>"
+)
+
+st.plotly_chart(fig2, use_container_width=True)
+
+# 그래프 2 해석 안내
+st.info("**이 그래프로 알 수 있는 것:** 각 장르 내에서 어떤 영화가 가장 많은 총 관객수를 모았으며, 시장 지배력이 높은지 직관적으로 비교할 수 있습니다.")
 
 st.divider()
