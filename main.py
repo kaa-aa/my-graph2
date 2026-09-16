@@ -72,3 +72,36 @@ st.plotly_chart(fig2, use_container_width=True)
 st.info("**이 그래프로 알 수 있는 것:** 각 장르 내에서 어떤 영화가 가장 많은 총 관객수를 모았으며, 시장 지배력이 높은지 직관적으로 비교할 수 있습니다.")
 
 st.divider()
+
+# ==========================================
+# 구역 3: 총 관객수 분포 (히스토그램)
+# ==========================================
+st.subheader("3. 영화별 총 관객수 분포")
+
+# 플롯리 히스토그램 생성
+fig3 = px.histogram(
+    df, 
+    x='total_audi',
+    nbins=30,
+    title="총 관객수 히스토그램",
+    labels={'total_audi': '총 관객수(명)'}
+)
+
+fig3.update_traces(
+    hovertemplate="관객수 구간: %{x}<br>영화 수: %{y}편<extra></extra>"
+)
+
+st.plotly_chart(fig3, use_container_width=True)
+
+# 최다 관객 동적 계산
+top_movie = df.loc[df['total_audi'].idxmax()]
+top_movie_name = top_movie['movieNm']
+top_movie_audi = top_movie['total_audi']
+
+# 그래프 3 해석 안내
+st.info(
+    f"**이 그래프로 알 수 있는 것:** 대다수의 영화는 총 관객수 100만~200만 명 이하의 낮은 구간에 밀집되어 있는 오른쪽으로 비대칭(Right-skewed)된 분포 형태를 띱니다. "
+    f"가장 많은 관객 수를 기록한 1위 영화는 **'{top_movie_name}'**(총 {top_movie_audi:,}명)입니다."
+)
+
+st.divider()
