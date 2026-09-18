@@ -174,3 +174,102 @@ st.plotly_chart(fig5, use_container_width=True)
 st.info("**이 그래프로 알 수 있는 것:** 주요 장르별 관객수의 중간값과 분포 범위를 비교할 수 있으며, 상자 밖으로 튀어나온 이상치 점들을 통해 장르 평균을 뛰어넘은 대형 흥행작을 쉽게 식별할 수 있습니다.")
 
 st.divider()
+
+# ==========================================
+# 구역 6: 개봉 성과와 최종 흥행의 관계 (버블 그래프)
+# ==========================================
+st.subheader("6. 개봉일 성과(스크린, 첫 주 관객)와 최종 흥행(총 관객)의 관계")
+
+# 플롯리 버블 그래프 생성 (fig4 기반)
+fig6 = px.scatter(
+    df,
+    x='first_scrn',
+    y='total_audi',
+    size='first_week_audi', # 점 크기 = 첫 주 관객
+    color='genre',
+    hover_name='movieNm',
+    title="개봉일 스크린수 vs 총 관객수 (크기: 첫 주 관객)",
+    labels={
+        'first_scrn': '개봉일 스크린수(개)',
+        'total_audi': '총 관객수(명)',
+        'first_week_audi': '첫 주 관객수(명)',
+        'genre': '장르'
+    },
+    size_max=60 # 버블 최대 크기 설정
+)
+
+# 호버 서식 변경 (첫 주 관객 정보 추가)
+fig6.update_traces(
+    hovertemplate="<b>%{hovertext}</b><br>"
+                  "개봉일 스크린수: %{x:,}개<br>"
+                  "<b>첫 주 관객수: %{marker.size:,}명</b><br>"
+                  "총 관객수: %{y:,}명<extra></extra>"
+)
+
+st.plotly_chart(fig6, use_container_width=True)
+
+# 그래프 6 해석 안내
+st.info("**이 그래프로 알 수 있는 것:** 네 번째 산점도에 '첫 주 관객수'를 점의 크기로 추가하여, 초기 흥행(개봉 성과)이 최종 총 관객수에 미치는 영향력을 시각적으로 비교할 수 있습니다. 버블이 크고 위쪽에 위치할수록 초기 기세가 최종 흥행으로 잘 이어진 경우입니다.")
+
+st.divider()
+
+# ==========================================
+# 구역 7: 제작 국가 및 장르별 영화 편수 (선버스트)
+# ==========================================
+st.subheader("7. 제작 국가 및 장르별 영화 편수 분포")
+
+# 선버스트용 집계 (국가 x 장르별 편수)
+nation_genre_counts = df.groupby(['nation', 'genre']).size().reset_index(name='movie_count')
+
+# 플롯리 선버스트 그래프 생성
+fig7 = px.sunburst(
+    nation_genre_counts,
+    path=['nation', 'genre'],
+    values='movie_count',
+    title="제작 국가 > 장르별 영화 편수 선버스트"
+)
+
+# 호버 서식 지정
+fig7.update_traces(
+    hovertemplate="<b>%{label}</b><br>영화 편수: %{value}편<br>비율: %{percentParent:.1%} (상위 항목 대비)<extra></extra>"
+)
+
+st.plotly_chart(fig7, use_container_width=True)
+
+# 그래프 7 해석 안내
+st.info("**이 그래프로 알 수 있는 것:** 각 제작 국가별로 어떤 장르의 영화가 주로 수입되거나 제작되었는지, 국가 간 대표 장르의 다변화 구조를 한눈에 비교할 수 있습니다.")
+
+st.divider()
+
+# ==========================================
+# 구역 8: 개봉일 스크린수와 10위권 체류일수 (관계 분석)
+# ==========================================
+st.subheader("8. 개봉일 스크린수가 많으면 10위에 더 오래 머무는가?")
+
+# 개봉일 스크린수 vs 10위권 체류일수 산점도 및 추세선
+fig8 = px.scatter(
+    df,
+    x='first_scrn',
+    y='days_in_top10',
+    color='genre',
+    hover_name='movieNm',
+    trendline='ols', # 추세선 추가
+    title="개봉일 스크린수 vs 10위권 체류일수 (Days in Top 10)",
+    labels={
+        'first_scrn': '개봉일 스크린수(개)',
+        'days_in_top10': '10위권 체류일수(일)',
+        'genre': '장르'
+    }
+)
+
+# 호버 서식 변경
+fig8.update_traces(
+    hovertemplate="<b>%{hovertext}</b><br>개봉일 스크린수: %{x:,}개<br>10위권 체류일수: %{y}일<extra></extra>"
+)
+
+st.plotly_chart(fig8, use_container_width=True)
+
+# 그래프 8 해석 안내
+st.info("**이 그래프로 알 수 있는 것:** 개봉일 스크린수가 많을수록 10위권 체류일수가 증가하는 완만한 양의 경향을 보입니다. 다만 스크린수가 적어도 관객 평가에 힘입어 오래 머문 영화나, 스크린수는 많았지만 일찍 순위권에서 벗어난 영화 등의 사례도 함께 관찰됩니다.")
+
+st.divider()
